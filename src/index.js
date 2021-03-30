@@ -1,57 +1,57 @@
+// 45:00
 import React from './lib/react';
 import ReactDOM from './lib/react-dom';
 
-// import React from 'react';
-// import ReactDOM from 'react-dom';
-import './index.css';
+class StateTest extends React.Component {
+  state = { num: 0 };
 
-let element;
+  handleClick1 = () => {
+    // 0 0 显示 1, 状态更新合并, 事件执行结束后在统一更新
+    this.setState({ num: this.state.num + 1 });
+    console.log(this.state.num);
+
+    this.setState({ num: this.state.num + 1 });
+    console.log(this.state.num);
+  }
+
+  handleClick2 = () => {
+    // 1 1 显示 1, setState 支持 callback
+    this.setState({ num: this.state.num + 1 }, () => {
+      console.log(this.state.num);
+    });
+
+    this.setState({ num: this.state.num + 1 }, () => {
+      console.log(this.state.num);
+    });
+
+  }
+
+  handleClick3 = () => {
+    // 0 0 2 2 显示 2, setState 支持传入一个函数
+    this.setState(state => ({num: state.num + 1}), () => {
+      console.log(this.state.num);
+    });
+    console.log(this.state.num);
 
 
-// jsx
-// element = 
-//   <h1 className="highlight" style={{color: 'pink'}}>
-//     hello<span>_word</span>
-//   </h1>
-
-// createElement
-// element =  React.createElement('h1', {
-//   className: 'highlight',
-//   style: {
-//     color: 'pink'
-//   }
-// }, 'hello', React.createElement('span', {}, '_world'));
-
-
-// 函数组件
-const FnComponent = (props) => {
-  return React.createElement('h1', {
-    className: 'highlight',
-    style: {
-      color: 'pink'
-    }
-  }, 'hello', React.createElement('span', {}, '_world'));;
-}
-
-// 类组件
-class ClassComponent extends React.Component {
-
+    this.setState(state => ({num: state.num + 1}), () => {
+      console.log(this.state.num);
+    });
+    console.log(this.state.num);
+  }
+  
   render() {
-    const { name } = this.props;
-    return React.createElement('h1', {
-        className: 'highlight',
-        style: {
-          color: 'pink'
-        }
-      }, name , React.createElement('span', {}, '_world'));
+    return React.createElement('div', {
+      style: {
+        paddingLeft: '100px'
+      }
+    }, 
+    React.createElement('div', {}, this.state.num),
+    React.createElement('button', {
+      onClick: this.handleClick3
+    }, '+'),
+    )
   }
 }
 
-
-// ReactDOM.render(element, document.getElementById('root'));
-// ReactDOM.render(FnComponent(), document.getElementById('root'));
-ReactDOM.render(
-  React.createElement(ClassComponent, { name: 'hello11' }),
-  document.getElementById('root')
-);
-
+ReactDOM.render(React.createElement(StateTest), document.getElementById('root'));
