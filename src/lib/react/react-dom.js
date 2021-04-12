@@ -14,9 +14,22 @@ const render = (element, container, component) => {
 
     if (type.isReactComponent) {
       component = new type(props);
+
+      // 类组件的 ref
+      if (props.ref) {
+        props.ref.current = component;
+      }
+
+      if (type.contextType) {
+        component.context = type.contextType.Provider.value;
+      }
+
       dom = createDOM(component.render(), component);
+      
       // 把真实 dom 挂载到组件实例，便于后续更新
       component.dom = dom;
+
+
     } else {
       dom = createDOM(type(props), component);
     }
@@ -57,13 +70,25 @@ const createDOM = (element, component) => {
       case key.startsWith('on'):
         addEvent(dom, key, value, component);
         break;
+      case key === 'ref':
+        if (typeof value === 'string') {
+          component.refs[value] = dom;
+        } else if (typeof value === 'function') {
+          value.call(component, dom);
+        } else if (typeof value === 'object'){
+          value.current = dom;
+        }
       default:
         dom.setAttribute(key, value);
     }
   }
 
   // 递归渲染
-  children.forEach(child => render(child, dom, component));
+  if (Array.isArray(children)) {
+    children.forEach(child => render(child, dom, component));
+  } else if (children) {
+    render(children, dom, component)
+  }
 
   return dom;
 }

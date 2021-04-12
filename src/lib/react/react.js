@@ -20,6 +20,9 @@ class Component {
 
     // 是否处于批量更新模式
     this.isBatchingUpdate = false;
+
+    // refs
+    this.refs = {};
   }
 
   setState(partialState, callback) {
@@ -33,7 +36,7 @@ class Component {
   }
 
   forceUpdate() {
-
+    if (this.updateQueue.length == 0) return;
     // 更新 state
     this.state = this.updateQueue.reduce((preState, currUpdate) => {
       const newState = typeof currUpdate === 'function' ? currUpdate(preState) : currUpdate;
@@ -52,8 +55,33 @@ class Component {
   }
 }
 
+const createRef = () => ({ current: null });
+
+const forwardRef = (FunctionComponent) => {
+  return class extends Component {
+    render() {
+      return FunctionComponent(this.props, this.props.ref);
+    }
+  }
+}
+
+const createContext = () => {
+  const Provider = (props) => {
+    Provider.value = props.value;
+    return props.children;
+  }
+
+  const Consumer = (props) => {
+    return props.children(Provider.value);
+  }
+
+  return { Provider, Consumer };
+}
 
 export default {
   createElement,
   Component,
+  createRef,
+  forwardRef,
+  createContext,
 }

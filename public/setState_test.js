@@ -1,6 +1,5 @@
-// 45:00
-import React from './lib/react';
-import ReactDOM from './lib/react-dom';
+import React from '../src/lib/react/react';
+import ReactDOM from '../src/lib/react/react-dom';
 
 class StateTest extends React.Component {
   state = { num: 0 };
@@ -48,7 +47,7 @@ class StateTest extends React.Component {
     }, 
     React.createElement('div', {}, this.state.num),
     React.createElement('button', {
-      onClick: this.handleClick3
+      onClick: this.handleClick1
     }, '+'),
     )
   }
