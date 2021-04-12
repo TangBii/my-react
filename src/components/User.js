@@ -3,7 +3,7 @@ import React from 'react';
 export default class User extends React.Component {
   constructor(props) {
     super(props);
-    
+    this.state = {};
   }
 
   render() {
@@ -11,6 +11,6 @@ export default class User extends React.Component {
       <>
         <h1>User</h1>
       </>
-    )
+    );
   }
-};
+}

@@ -4,9 +4,9 @@ import ReactDOM from './react-dom';
 const createElement = (type, config = {}, ...children) => {
   return {
     type,
-    props: { ...config, children }
-  }
-}
+    props: { ...config, children },
+  };
+};
 
 class Component {
   static isReactComponent = true;
@@ -26,7 +26,6 @@ class Component {
   }
 
   setState(partialState, callback) {
-
     this.updateQueue.push(partialState);
     callback && this.callbacks.push(callback);
 
@@ -36,12 +35,12 @@ class Component {
   }
 
   forceUpdate() {
-    if (this.updateQueue.length == 0) return;
+    if (this.updateQueue.length === 0) return;
     // 更新 state
     this.state = this.updateQueue.reduce((preState, currUpdate) => {
       const newState = typeof currUpdate === 'function' ? currUpdate(preState) : currUpdate;
-      return { ...preState, ...newState }
-    }, this.state)
+      return { ...preState, ...newState };
+    }, this.state);
 
     // 清空队列
     this.updateQueue.length = 0;
@@ -50,7 +49,7 @@ class Component {
     ReactDOM.updateComponent(this);
 
     // 执行回调
-    this.callbacks.forEach(callback => callback());
+    this.callbacks.forEach((callback) => callback());
     this.callbacks.length = 0;
   }
 }
@@ -62,21 +61,21 @@ const forwardRef = (FunctionComponent) => {
     render() {
       return FunctionComponent(this.props, this.props.ref);
     }
-  }
-}
+  };
+};
 
 const createContext = () => {
   const Provider = (props) => {
     Provider.value = props.value;
     return props.children;
-  }
+  };
 
   const Consumer = (props) => {
     return props.children(Provider.value);
-  }
+  };
 
   return { Provider, Consumer };
-}
+};
 
 export default {
   createElement,
@@ -84,4 +83,4 @@ export default {
   createRef,
   forwardRef,
   createContext,
-}
+};
