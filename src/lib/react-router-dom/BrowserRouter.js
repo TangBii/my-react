@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable no-alert */
 /* eslint-disable no-debugger */
 /* eslint-disable react/no-access-state-in-setstate */
@@ -6,39 +7,47 @@ import React from 'react';
 import { Provider } from './context';
 
 
-export default class HashRouter extends React.Component {
+export default class BrowserRouter extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       location: {
-        pathname: location.hash.slice(1) || '/',
-        query: '',
+        pathname: '/',
         state: null,
       },
     };
   }
   componentDidMount() {
-    // 默认跳转到 '/'
-    location.hash = location.hash.slice(1) ? location.hash.slice(1) : '/';
+    // 劫持 history.pushState, 当添加时触发 window.onpushstate 事件
+    !(function (history) {
+      const { pushState } = history;
+      history.pushState = (state, title, pathname) => {
+        if (typeof window.onpushstate === 'function') {
+          window.onpushstate(state, pathname);
+        }
+        return pushState.call(history, state, title, pathname);
+      };
+    })(window.history);
 
-    // 监听 hashchange 事件
-    window.addEventListener('hashchange', () => {
-      const hash = location.hash.slice(1) ? location.hash.slice(1) : '/';
-
-      let index = hash.indexOf('?');
-      index = index === -1 ? hash.length : index;
-      const pathname = hash.slice(0, index);
-      const query = hash.slice(index);
-
-      this.setState((state) => ({
+    window.onpushstate = (state, pathname) => {
+      this.setState({
         location: {
-          ...state.location,
+          ...this.state.location,
           pathname,
-          query,
-          state: this.locationState || state.location.state,
+          state,
         },
-      }));
-    });
+      });
+    };
+
+    window.onpopstate = (event) => {
+      this.setState({
+        location: {
+          ...this.state.location,
+          pathname: document.location.pathname,
+          state: event.state,
+        },
+      });
+    };
   }
   render() {
     const value = {
@@ -52,11 +61,9 @@ export default class HashRouter extends React.Component {
           }
           if (typeof to === 'object') {
             const { pathname, state } = to;
-            location.hash = pathname;
-            this.locationState = state;
+            window.history.pushState(state, '', pathname);
           } else if (typeof to === 'string') {
-            location.hash = to;
-            this.locationState = {};
+            window.history.pushState(null, '', to);
           }
         },
         block: (message) => {

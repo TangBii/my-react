@@ -1,8 +1,12 @@
 import React from 'react';
 
-const { Provider, Consumer } = React.createContext();
+const RouteContext = React.createContext();
+const { Consumer, Provider } = RouteContext;
+
 
 export {
   Consumer,
   Provider,
 };
+
+export default RouteContext;
