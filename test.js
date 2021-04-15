@@ -1,20 +1,8 @@
-const { pathToRegexp } = require('path-to-regexp');
+const add1 = (str) => 1 + str;
+const add2 = (str) => 2 + str;
+const add3 = (str) => 3 + str;
 
-const pathname = '/user/1/wukong';
+const compose = (...fns) => fns.reduce((a, b) => (...args) => b(a(...args)));
 
-const keys = [];
-const regexp = pathToRegexp('/user/:id/:name', keys, { end: false });
+console.log(compose(add1, add2, add3)('str'));
 
-const result = pathname.match(/fdaf/);
-
-// const paramsName = keys.map(key => key.name);
-
-// const [url, ...values] = result;
-
-
-// const obj = paramsName.reduce((obj, name, index) => {
-//   obj[name] = values[index];
-//   return obj;
-// }, {});
-
-console.log(result);
